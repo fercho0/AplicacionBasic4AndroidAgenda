@@ -1,0 +1,101 @@
+﻿Version=6
+NumberOfModules=1
+Module1=Starter
+Build1=Default,b4a.example
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo")~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=4
+File1=Captura.gif
+File2=dbagenda.db
+File3=Lform1.bal
+File4=Main.bal
+NumberOfLibraries=2
+Library1=core
+Library2=sql
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: B4A Example
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+	#IgnoreWarnings: 10, 12
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+	Dim s As SQL
+	Dim c As Cursor
+	Dim v As String
+
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+
+	Private txtnom As EditText
+	Private txttel As EditText
+	Private LvlisContac As ListView
+	Private btnAgrega As Button
+	
+	
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	Activity.LoadLayout("Lform1")
+	Dim ruta As String
+	
+	If File.ExternalWritable Then
+		 ruta=File.DirDefaultExternal
+		Else
+		 ruta=File.DirInternal
+	End If
+	
+	If File.Exists(ruta,"bdagenda.db")= False Then
+		File.Copy(File.DirAssets, "dbagenda.db", ruta, "dbagenda.db")
+		
+	End If
+	
+	s.Initialize(ruta,"dbagenda.db",True)
+	
+	
+End Sub
+
+Sub Activity_Resume
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+
+Sub btnAgrega_Click
+	
+	v = "jejeje"
+	If txtnom.Text<> ""+v And txttel.Text <> "" Then
+		
+		s.ExecNonQuery2("INSERT INTO Contactos (Nombre,Telefono) VALUES(?,?)", Array As String(txtnom.Text,txttel.Text))
+		
+		c=s.ExecQuery("SELECT Nombre, Telefono FROM Contactos")
+			
+		LvlisContac.Clear
+
+		If c.RowCount>0 Then
+			For i=0 To c.RowCount-1
+				c.Position=i
+				
+				LvlisContac.AddTwoLines(c.GetString("Nombre"),c.GetString("Telefono"))
+				
+			Next
+		End If
+		  
+	End If
+End Sub
